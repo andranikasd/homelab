@@ -1,3 +1,5 @@
-pm_api_url                 = "https://10.0.0.40:8006/api2/json"
-proxmox_api_token_id       = "root@pam!root-token-tf"
-proxmox_api_token_secret   = "f29ac3b7-aeac-4942-85b2-ce39f2c74f7c"
+proxmox_api_url             = "http://10.0.0.40:8006/api2/json"
+proxmox_api_token_id        = "root@pam!tf"
+proxmox_api_token_secret    = "fdd6f6e6-d2c2-466c-9223-5a1b55c67a46"
+ssh_public_keys             = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAbY8KsC5WENl/W3y0MAAuVKE+By8WTZREdmTDXGWjIT andranik@fedora"
+pve_node                    = "pve"

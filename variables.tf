@@ -1,14 +1,26 @@
-variable "proxmox_api_token_secret" {
-  description = "Proxmox API token secret for authentication"
-  type        = string
+variable "proxmox_api_url" {
+  type = string
 }
 
 variable "proxmox_api_token_id" {
-  description = "Proxmox API token ID for authentication"
-  type        = string
+  type = string
 }
 
-variable "pm_api_url" {
-  description = "Proxmox API URL"
-  type        = string
+variable "proxmox_api_token_secret" {
+  type = string
+}
+
+variable "ssh_public_keys" {
+  type = string
+}
+
+variable "pve_node" {
+  type    = string
+  default = "pve"
+}
+
+variable "lxc_password" {
+  type = string
+  description = "The password for the LXC container"
+  sensitive = true
 }
