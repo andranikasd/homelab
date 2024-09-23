@@ -56,6 +56,36 @@ variable "worker_count" {
   default     = 2
 }
 
+variable "worker_cores" {
+  description = "The number of CPU cores for each worker node."
+  type        = number
+  default     = 4
+}
+
+variable "worker_memory" {
+  description = "The amount of memory (in MB) for each worker node."
+  type        = number
+  default     = 8192
+}
+
+variable "worker_disk_size" {
+  description = "The disk size for each worker node."
+  type        = string
+  default     = "50G"
+}
+
+variable "worker_storage" {
+  description = "The storage pool for the worker VM disks."
+  type        = string
+  default     = "local-lvm"
+}
+
+variable "vm_template" {
+  description = "The template to clone for creating the worker nodes."
+  type        = string
+  default     = "ubuntu-22.04-template"
+}
+
 variable "ostemplate" {
   description = "The path to the LXC OS template that will be used to provision the containers."
   type        = string
