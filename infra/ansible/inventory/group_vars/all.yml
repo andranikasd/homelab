@@ -1,0 +1,32 @@
+timezone: "Etc/UTC"
+
+docker_users:
+  - ubuntu
+
+ufw_allow_tcp:
+  - 22   # SSH
+  - 80   # HTTP
+  - 443  # HTTPS
+
+apps_root: "/opt/compose"
+management_dir: "{{ apps_root }}/management"
+
+zone_domain: "example.com"
+traefik_host: "traefik.{{ zone_domain }}"
+portainer_host: "portainer.{{ zone_domain }}"
+jenkins_host: "jenkins.{{ zone_domain }}"
+authentik_host: "auth.{{ zone_domain }}"
+vault_host: "vault.{{ zone_domain }}"
+
+acme_email: "{{ vault_acme_email }}"
+cf_dns_api_token: "{{ vault_cf_dns_api_token }}"
+
+portainer_admin_password: "{{ vault_portainer_admin_password }}"
+authentik_admin_email: "{{ vault_authentik_admin_email }}"
+authentik_admin_password: "{{ vault_authentik_admin_password }}"
+vault_root_token: "{{ vault_vault_root_token }}"
+
+smtp_host: "{{ vault_smtp_host | default('') }}"
+smtp_port: "{{ vault_smtp_port | default(587) }}"
+smtp_user: "{{ vault_smtp_user | default('') }}"
+smtp_pass: "{{ vault_smtp_pass | default('') }}"

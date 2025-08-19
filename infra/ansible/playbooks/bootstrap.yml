@@ -1,0 +1,7 @@
+- name: Bootstrap server with base config
+  hosts: ovh-server
+  become: true
+  vars_files:
+    - ../inventory/group_vars/vault.yaml
+  roles:
+    - prereq
