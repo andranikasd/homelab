@@ -50,7 +50,12 @@ resource "proxmox_vm_qemu" "edge_stack_vm" {
   bootdisk = "scsi0"
   
   # OS Disk
-  scsi0 = "${var.vm_storage}:${var.vm_disk_size},format=qcow2"
+  disk {
+    storage = var.vm_storage
+    size    = var.vm_disk_size
+    format  = "qcow2"
+    type    = "scsi"
+  }
   
   # Network - Public IP
   network {

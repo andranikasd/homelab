@@ -6,8 +6,9 @@
 terraform.tfvars
 *.tfplan
 
-# SOPS
-secrets/*.encrypted
+# SOPS - Allow encrypted files, ignore unencrypted
+secrets/*
+!secrets/*.encrypted
 !secrets/.sops.yaml
 
 # Age keys
