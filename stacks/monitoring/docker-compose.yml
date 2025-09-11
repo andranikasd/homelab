@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  # Node Exporter - System metrics
+  node-exporter:
+    image: prom/node-exporter:latest
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+      - '--web.listen-address=0.0.0.0:9100'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks:
+      - monitoring
+      - swarm_network
+    deploy:
+      mode: global
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.node-exporter.rule=Host(`node-exporter.${DOMAIN}`)
+        - traefik.http.routers.node-exporter.tls=true
+        - traefik.http.routers.node-exporter.tls.certresolver=letsencrypt
+        - traefik.http.routers.node-exporter.service=node-exporter
+        - traefik.http.services.node-exporter.loadbalancer.server.port=9100
+
+  # Docker Exporter - Docker metrics
+  docker-exporter:
+    image: prom/node-exporter:latest
+    command:
+      - '--collector.docker'
+      - '--web.listen-address=0.0.0.0:9101'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - monitoring
+      - swarm_network
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.docker-exporter.rule=Host(`docker-exporter.${DOMAIN}`)
+        - traefik.http.routers.docker-exporter.tls=true
+        - traefik.http.routers.docker-exporter.tls.certresolver=letsencrypt
+        - traefik.http.routers.docker-exporter.service=docker-exporter
+        - traefik.http.services.docker-exporter.loadbalancer.server.port=9101
+
+  # Traefik Exporter - Traefik metrics
+  traefik-exporter:
+    image: containous/traefik-metrics-prometheus:latest
+    command:
+      - '--traefik.address=http://traefik:8080'
+      - '--web.listen-address=0.0.0.0:9102'
+    networks:
+      - monitoring
+      - swarm_network
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.traefik-exporter.rule=Host(`traefik-exporter.${DOMAIN}`)
+        - traefik.http.routers.traefik-exporter.tls=true
+        - traefik.http.routers.traefik-exporter.tls.certresolver=letsencrypt
+        - traefik.http.routers.traefik-exporter.service=traefik-exporter
+        - traefik.http.services.traefik-exporter.loadbalancer.server.port=9102
+
+  # CrowdSec Exporter - CrowdSec metrics
+  crowdsec-exporter:
+    image: crowdsecurity/cs-crowdsec-metrics:latest
+    environment:
+      - CROWDSEC_AGENT_HOST=crowdsec:8080
+      - CROWDSEC_API_KEY_FILE=/run/secrets/crowdsec_api_key
+    networks:
+      - monitoring
+      - swarm_network
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.crowdsec-exporter.rule=Host(`crowdsec-exporter.${DOMAIN}`)
+        - traefik.http.routers.crowdsec-exporter.tls=true
+        - traefik.http.routers.crowdsec-exporter.tls.certresolver=letsencrypt
+        - traefik.http.routers.crowdsec-exporter.service=crowdsec-exporter
+        - traefik.http.services.crowdsec-exporter.loadbalancer.server.port=9103
+    secrets:
+      - crowdsec_api_key
+
+networks:
+  monitoring:
+    external: false
+  swarm_network:
+    external: true
+
+secrets:
+  crowdsec_api_key:
+    external: true

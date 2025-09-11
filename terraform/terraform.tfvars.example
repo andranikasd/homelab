@@ -1,0 +1,47 @@
+# OVH Proxmox Configuration
+proxmox_api_url = "https://pve.mxnq.net:8006/api2/json"
+proxmox_token_id = "root@pam!terraform"
+proxmox_token_secret = "a240d873-bc77-40d2-bd0a-d5ddd909aa7f"
+proxmox_tls_insecure = false
+proxmox_node = "ns3162960"
+
+# VM Configuration
+vm_name = "edge-stack"
+vm_id = 100
+vm_cores = 4
+vm_memory = 8192  # 8GB RAM
+vm_storage = "local"
+vm_disk_size = "100G"
+vm_bridge = "vmbr0"
+vm_public_ip = "51.178.20.53"  # Your OVH public IP
+vm_gateway = "51.178.20.254"       # OVH gateway (typical)
+vm_user = "ubuntu"
+vm_password = "SecurePassword123!"
+vm_ssh_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDJsXbdvx0uf+40L8wTTNFerokakXCGdcfc2QGXnaJVEJmJePVHgu9sLFDUtEZwBA1okTG/ut2VnVbe9EVm5tfFHSGxX+bxK4K/xMmgXJ7PYvn2lFyGEnhFi/CGtIrDpplwlTHkcj/2RR26OFVVJUVG3kDpAYqEKpzOL13/sYsXg6cao+7zvXggwAs67Vl+fe9XKal8J/6kWXrzB3akEX8WbrF4/eb6J/TEKuo7AzcSpsWsvCC3ns9FnRiwzbJ9xKgmdb12vYTbjUSlR+rqvfYD4kGffHAVIOCcgllnUAmKc3wJ7VZdK34eRvx8fg0x39bygFjLyhc6Y+/gJxvOPygy2yRpB6c5eClsqV5QKuNof5ZWELr+/tpOvYdjinLudhbz+GMZmyP0rtz6dPC9WQS8th3GR/T7qePrO79mMvZGVqeRqnGkRFqWTZH/p9CBykIJGgt47kCb9rBsaFVdYn3D+66HDRVYGQeuPPejRPPnrEqFXjyC+D/ro0Wz7w0Ea+/VC11RgqCfHWxEOUQ965hKZf/tUjUwqjM3u2hdYNvxOd3ISotNdH63KlYiNKmWDAW+9UcRId+Gxi7rcO/heS6Pu2epalFDAc1KrUAC2eCaDR8SE+s1UZ/S8Bz6ioMcr7Lyy/vjFD+YFspeqtM1a8O/FTbJO3Nj3GE9QUuYMgErdQ== andranikgrigoryan@fedora"
+vm_ssh_private_key = "~/public/andranikasd/.ssh/id_rsa"
+vm_template = "ubuntu-22.04-cloud"
+
+# Docker configuration
+docker_host = "unix:///var/run/docker.sock"
+docker_cert_path = ""
+swarm_advertise_addr = "0.0.0.0"
+
+# Portainer configuration
+portainer_agent_secret = "your-secure-agent-secret-here"
+
+# GitOps configuration
+git_repository = "https://github.com/your-username/your-homelab-repo.git"
+git_branch = "main"
+git_username = "your-git-username"
+git_password = "your-git-token-or-password"
+
+# Domain configuration
+domain = "your-domain.com"
+email = "your-email@example.com"
+
+# OAuth2 Proxy configuration
+oauth2_proxy_provider = "google"
+oauth2_proxy_redirect_url = "https://your-domain.com/oauth2/callback"
+
+# CrowdSec configuration
+crowdsec_api_url = "https://api.crowdsec.net"

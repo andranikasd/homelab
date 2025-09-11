@@ -1,8 +1,0 @@
-- name: Full provisioning with management stack
-  hosts: ovh-server
-  become: true
-  vars_files:
-    - ../inventory/group_vars/vault.yaml
-  roles:
-    - prereq
-    - management

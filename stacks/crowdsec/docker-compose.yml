@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  crowdsec:
+    image: crowdsecurity/crowdsec:latest
+    environment:
+      - COLLECTIONS=crowdsecurity/traefik
+      - DISABLE_AGENT=true
+      - DISABLE_LOCAL_API=false
+      - LEVEL_INFO=true
+    volumes:
+      - crowdsec_config:/etc/crowdsec
+      - crowdsec_data:/var/lib/crowdsec/data
+      - /var/log:/var/log:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - crowdsec
+      - swarm_network
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.crowdsec.rule=Host(`crowdsec.${DOMAIN}`)
+        - traefik.http.routers.crowdsec.tls=true
+        - traefik.http.routers.crowdsec.tls.certresolver=letsencrypt
+        - traefik.http.routers.crowdsec.service=crowdsec
+        - traefik.http.services.crowdsec.loadbalancer.server.port=8080
+        - traefik.http.routers.crowdsec.middlewares=auth
+        - traefik.http.middlewares.auth.basicauth.users=${CROWDSEC_AUTH}
+    secrets:
+      - crowdsec_api_key
+
+  # CrowdSec dashboard
+  crowdsec-dashboard:
+    image: crowdsecurity/cs-crowdsec-dashboard:latest
+    environment:
+      - CROWDSEC_API_URL=http://crowdsec:8080
+      - CROWDSEC_API_KEY_FILE=/run/secrets/crowdsec_api_key
+    networks:
+      - crowdsec
+      - swarm_network
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.crowdsec-dashboard.rule=Host(`crowdsec-dashboard.${DOMAIN}`)
+        - traefik.http.routers.crowdsec-dashboard.tls=true
+        - traefik.http.routers.crowdsec-dashboard.tls.certresolver=letsencrypt
+        - traefik.http.routers.crowdsec-dashboard.service=crowdsec-dashboard
+        - traefik.http.services.crowdsec-dashboard.loadbalancer.server.port=3000
+        - traefik.http.routers.crowdsec-dashboard.middlewares=auth
+        - traefik.http.middlewares.auth.basicauth.users=${CROWDSEC_AUTH}
+    secrets:
+      - crowdsec_api_key
+    depends_on:
+      - crowdsec
+
+volumes:
+  crowdsec_config:
+    external: false
+  crowdsec_data:
+    external: false
+
+networks:
+  crowdsec:
+    external: false
+  swarm_network:
+    external: true
+
+secrets:
+  crowdsec_api_key:
+    external: true

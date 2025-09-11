@@ -1,9 +1,0 @@
-{
-  "log-driver": "{{ docker_daemon_opts['log-driver'] }}",
-  "log-opts": {
-    {% for k, v in docker_daemon_opts['log-opts'].items() %}
-    "{{ k }}": "{{ v }}"{% if not loop.last %},{% endif %}
-    {% endfor %}
-  },
-  "storage-driver": "{{ docker_daemon_opts['storage-driver'] }}"
-}
