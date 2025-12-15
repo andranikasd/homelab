@@ -3,7 +3,7 @@ services:
   # TRAEFIK - Reverse Proxy (SSL via Cloudflare)
   # ============================================
   traefik:
-    image: traefik:v3.2
+    image: traefik:v2.11
     container_name: traefik
     restart: unless-stopped
     security_opt:
@@ -34,7 +34,6 @@ services:
     image: prom/prometheus:v2.54.1
     container_name: prometheus
     restart: unless-stopped
-    user: "1000:1000"
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -62,7 +61,6 @@ services:
     image: grafana/grafana:11.3.0
     container_name: grafana
     restart: unless-stopped
-    user: "1000:1000"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}

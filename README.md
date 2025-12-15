@@ -1,6 +1,7 @@
 # Homelab Docker Compose Stack
 
 A production-ready monitoring and automation stack with Traefik, Prometheus, Grafana, and N8n.
+SSL is handled by Cloudflare proxy.
 
 ## Services
 
@@ -15,31 +16,25 @@ A production-ready monitoring and automation stack with Traefik, Prometheus, Gra
 
 ### 1. Configure DNS
 
-Point `*.mxnq.net` to your server's public IP address.
+Point `*.mxnq.net` to your server's IP via Cloudflare (proxied).
 
-### 2. Update Environment Variables
-
-Edit `.env` file with your values:
+### 2. Create Environment File
 
 ```bash
-# Generate basic auth password
+cp .env.example .env
+# Edit .env with your values
+
+# Generate basic auth password:
 echo $(htpasswd -nb admin your-password) | sed -e s/\\$/\\$\\$/g
 ```
 
-### 3. Create Data Directories
-
-```bash
-mkdir -p data/{prometheus,grafana}
-sudo chown -R 1000:1000 data/
-```
-
-### 4. Start the Stack
+### 3. Start the Stack
 
 ```bash
 docker compose up -d
 ```
 
-### 5. View Logs
+### 4. View Logs
 
 ```bash
 docker compose logs -f
@@ -55,8 +50,12 @@ docker compose logs -f
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    TRAEFIK (443)                        │
-│              Reverse Proxy + Let's Encrypt              │
+│            CLOUDFLARE (SSL Termination)                 │
+└─────────────────────────────────────────────────────────┘
+                          │
+┌─────────────────────────────────────────────────────────┐
+│                    TRAEFIK (:80)                        │
+│                    Reverse Proxy                        │
 └─────────────────────────────────────────────────────────┘
          │              │              │              │
     ┌────▼────┐   ┌─────▼─────┐  ┌─────▼────┐   ┌─────▼────┐

@@ -1,7 +1,6 @@
-# Environment variables (copy .env.example to .env and fill in values)\n.env\n!.env.example
-
-# SSL certificates
-traefik/acme.json
+# Environment variables (copy .env.example to .env)
+.env
+!.env.example
 
 # Data directories
 data/
