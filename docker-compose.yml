@@ -1,6 +1,6 @@
 services:
   # ============================================
-  # TRAEFIK - Reverse Proxy (SSL via Cloudflare)
+  # TRAEFIK - Reverse Proxy & SSL Termination
   # ============================================
   traefik:
     image: traefik:v2.11
@@ -10,18 +10,21 @@ services:
       - no-new-privileges:true
     ports:
       - "80:80"
+      - "443:443"
     environment:
       - TZ=UTC
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - traefik-certs:/letsencrypt
     networks:
       - homelab
     labels:
       - "traefik.enable=true"
       # Dashboard
       - "traefik.http.routers.traefik.rule=Host(`traefik.mxnq.net`)"
-      - "traefik.http.routers.traefik.entrypoints=web"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.middlewares=traefik-auth"
       # Basic Auth for dashboard
@@ -48,7 +51,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prometheus.rule=Host(`prometheus.mxnq.net`)"
-      - "traefik.http.routers.prometheus.entrypoints=web"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
       - "traefik.http.routers.prometheus.middlewares=prometheus-auth"
       - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
       # Basic Auth for Prometheus
@@ -75,7 +79,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.grafana.rule=Host(`grafana.mxnq.net`)"
-      - "traefik.http.routers.grafana.entrypoints=web"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
 
   # ============================================
@@ -103,7 +108,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.n8n.rule=Host(`n8n.mxnq.net`)"
-      - "traefik.http.routers.n8n.entrypoints=web"
+      - "traefik.http.routers.n8n.entrypoints=websecure"
+      - "traefik.http.routers.n8n.tls.certresolver=letsencrypt"
       - "traefik.http.services.n8n.loadbalancer.server.port=5678"
 
 networks:
@@ -112,6 +118,7 @@ networks:
     driver: bridge
 
 volumes:
+  traefik-certs:
   prometheus-data:
   grafana-data:
   n8n-data:
