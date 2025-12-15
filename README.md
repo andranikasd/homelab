@@ -1,65 +1,66 @@
-# Edge Stack – GitOps Stacks
+# Homelab Docker Compose Stack
 
-This repository contains Docker Compose stacks and encrypted secrets for a complete Edge Stack deployment via Portainer GitOps.
+A production-ready monitoring and automation stack with Traefik, Prometheus, Grafana, and N8n.
 
-## What's Included
+## Services
 
-- **Docker Compose Stacks**: Ready-to-deploy stacks for Traefik, CrowdSec, OAuth2-proxy, and monitoring
-- **Encrypted Secrets**: SOPS-encrypted secrets for secure GitOps deployment
-- **Portainer Configuration**: GitOps setup for automated deployments
-
-## Architecture
-
-- **Portainer**: Container management and GitOps
-- **Docker Swarm**: Single-node cluster for orchestration
-- **SOPS**: Encrypts secrets in Git using age encryption
-- **GitOps**: Automated deployment from Git repository
-
-## Stacks Available
-
-### Core Services
-- **Traefik**: Reverse proxy with SSL termination
-- **CrowdSec**: WAF and security monitoring
-- **OAuth2 Proxy**: Authentication and authorization
-- **Monitoring**: Prometheus exporters for metrics
-
-### Monitoring Endpoints
-- **Node Exporter**: System metrics
-- **Docker Exporter**: Docker metrics  
-- **Traefik Exporter**: Traefik metrics
-- **CrowdSec Exporter**: CrowdSec metrics
-
-## Repository Structure
-
-```
-├── stacks/                   # Docker Compose stacks
-│   ├── traefik/             # Reverse proxy
-│   ├── crowdsec/            # WAF and security
-│   ├── oauth2-proxy/        # Authentication
-│   └── monitoring/          # Observability stack
-├── secrets/                  # SOPS encrypted secrets
-│   ├── .sops.yaml           # SOPS configuration
-│   └── *.encrypted          # Encrypted secret files
-├── portainer/               # Portainer configurations
-│   └── gitops/              # GitOps stack definitions
-└── docs/                    # Documentation
-    ├── SECRETS_GUIDE.md     # Secret setup guide
-    └── QUICKSTART.md        # Quick start guide
-```
+| Service | URL | Description |
+|---------|-----|-------------|
+| Traefik | https://traefik.mxnq.net | Reverse proxy dashboard |
+| Prometheus | https://prometheus.mxnq.net | Metrics collection |
+| Grafana | https://grafana.mxnq.net | Dashboards & visualization |
+| N8n | https://n8n.mxnq.net | Workflow automation |
 
 ## Quick Start
 
-1. **Set up Proxmox VM** with Docker and Portainer
-2. **Configure Portainer GitOps** to use this repository
-3. **Deploy stacks** via Portainer interface
+### 1. Configure DNS
 
-## Security
+Point `*.mxnq.net` to your server's public IP address.
 
-- All secrets are encrypted using SOPS with age encryption
-- Secrets are automatically decrypted and deployed to Docker Swarm
-- GitOps ensures consistent and auditable deployments
-- WAF protection via CrowdSec
+### 2. Update Environment Variables
 
-## License
+Edit `.env` file with your values:
 
-See [LICENSE](LICENSE) file for details.
+```bash
+# Generate basic auth password
+echo $(htpasswd -nb admin your-password) | sed -e s/\\$/\\$\\$/g
+```
+
+### 3. Create Data Directories
+
+```bash
+mkdir -p data/{prometheus,grafana}
+sudo chown -R 1000:1000 data/
+```
+
+### 4. Start the Stack
+
+```bash
+docker compose up -d
+```
+
+### 5. View Logs
+
+```bash
+docker compose logs -f
+```
+
+## Default Credentials
+
+- **Traefik/Prometheus**: Set via `TRAEFIK_BASIC_AUTH` in `.env`
+- **Grafana**: `admin` / `GRAFANA_ADMIN_PASSWORD` from `.env`
+- **N8n**: `N8N_BASIC_AUTH_USER` / `N8N_BASIC_AUTH_PASSWORD` from `.env`
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    TRAEFIK (443)                        │
+│              Reverse Proxy + Let's Encrypt              │
+└─────────────────────────────────────────────────────────┘
+         │              │              │              │
+    ┌────▼────┐   ┌─────▼─────┐  ┌─────▼────┐   ┌─────▼────┐
+    │ Traefik │   │ Prometheus│  │  Grafana │   │   N8n    │
+    │Dashboard│   │   :9090   │  │  :3000   │   │  :5678   │
+    └─────────┘   └───────────┘  └──────────┘   └──────────┘
+```

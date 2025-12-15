@@ -1,45 +1,15 @@
-# Terraform
-*.tfstate
-*.tfstate.*
-.terraform/
-.terraform.lock.hcl
-terraform.tfvars
-*.tfplan
+# Environment variables
+.env
 
-# SOPS - Allow encrypted files, ignore unencrypted
-secrets/*
-!secrets/*.encrypted
-!secrets/.sops.yaml
+# SSL certificates
+traefik/acme.json
 
-# Age keys
-.age/
-*.age
-
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
+# Data directories
+data/
 
 # Logs
 *.log
 
-# Temporary files
-*.tmp
-*.temp
-
-# SSH keys
-*.pem
-*.key
-!*.pub
-
-# Docker
-.docker/
-
-# Backup files
-*.bak
-*.backup
+# OS files
+.DS_Store
+Thumbs.db
