@@ -1,5 +1,6 @@
 # Traefik Static Configuration
 # ============================================
+# SSL is handled by Cloudflare proxy
 
 api:
   dashboard: true
@@ -9,29 +10,11 @@ log:
   level: INFO
 
 accessLog:
-  filePath: "/var/log/traefik/access.log"
   bufferingSize: 100
 
 entryPoints:
   web:
     address: ":80"
-    http:
-      redirections:
-        entryPoint:
-          to: websecure
-          scheme: https
-  websecure:
-    address: ":443"
-    http:
-      tls:
-        certResolver: letsencrypt
-
-certificatesResolvers:
-  letsencrypt:
-    acme:
-      email: "${ACME_EMAIL}"
-      storage: /letsencrypt/acme.json
-      tlsChallenge: {}
 
 providers:
   docker:
@@ -45,3 +28,4 @@ metrics:
     addEntryPointsLabels: true
     addRoutersLabels: true
     addServicesLabels: true
+
