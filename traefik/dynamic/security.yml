@@ -1,0 +1,48 @@
+# Security Middlewares (100% Open Source Traefik)
+# ============================================
+
+http:
+  middlewares:
+    # Combined security chain
+    security:
+      chain:
+        middlewares:
+          - rate-limit
+          - secure-headers
+          - gzip
+
+    # Rate Limiting - Prevents brute force & DDoS
+    rate-limit:
+      rateLimit:
+        average: 100        # requests per second
+        burst: 50           # allowed burst
+        period: 1s
+
+    # Security Headers - XSS, Clickjacking, MIME sniffing protection
+    secure-headers:
+      headers:
+        browserXssFilter: true
+        contentTypeNosniff: true
+        frameDeny: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 31536000
+        customFrameOptionsValue: "SAMEORIGIN"
+        referrerPolicy: "strict-origin-when-cross-origin"
+        customResponseHeaders:
+          X-Robots-Tag: "noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex"
+          Server: ""
+          X-Powered-By: ""
+
+    # Compression
+    gzip:
+      compress: true
+
+    # IP Allowlist (uncomment to restrict access)
+    # ip-allowlist:
+    #   ipAllowList:
+    #     sourceRange:
+    #       - "YOUR_HOME_IP/32"
+    #       - "10.0.0.0/8"
+    #       - "172.16.0.0/12"
+    #       - "192.168.0.0/16"

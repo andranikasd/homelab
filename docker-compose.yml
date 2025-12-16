@@ -9,13 +9,14 @@ services:
     security_opt:
       - no-new-privileges:true
     ports:
-      - "80:80"
+      - "80:80" # Required for Let's Encrypt HTTP challenge
       - "443:443"
     environment:
       - TZ=UTC
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic:/etc/traefik/dynamic:ro
       - traefik-certs:/letsencrypt
     networks:
       - homelab
@@ -26,7 +27,7 @@ services:
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
       - "traefik.http.routers.traefik.service=api@internal"
-      - "traefik.http.routers.traefik.middlewares=traefik-auth"
+      - "traefik.http.routers.traefik.middlewares=security@file,traefik-auth"
       # Basic Auth for dashboard
       - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_BASIC_AUTH}"
 
@@ -53,7 +54,7 @@ services:
       - "traefik.http.routers.prometheus.rule=Host(`prometheus.mxnq.net`)"
       - "traefik.http.routers.prometheus.entrypoints=websecure"
       - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.prometheus.middlewares=prometheus-auth"
+      - "traefik.http.routers.prometheus.middlewares=security@file,prometheus-auth"
       - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
       # Basic Auth for Prometheus
       - "traefik.http.middlewares.prometheus-auth.basicauth.users=${TRAEFIK_BASIC_AUTH}"
@@ -81,6 +82,7 @@ services:
       - "traefik.http.routers.grafana.rule=Host(`grafana.mxnq.net`)"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.grafana.middlewares=security@file"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
 
   # ============================================
@@ -110,6 +112,7 @@ services:
       - "traefik.http.routers.n8n.rule=Host(`n8n.mxnq.net`)"
       - "traefik.http.routers.n8n.entrypoints=websecure"
       - "traefik.http.routers.n8n.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.n8n.middlewares=security@file"
       - "traefik.http.services.n8n.loadbalancer.server.port=5678"
 
 networks:

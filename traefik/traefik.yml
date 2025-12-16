@@ -1,6 +1,6 @@
 # Traefik Static Configuration
 # ============================================
-# Full SSL with Let's Encrypt
+# Full SSL with Let's Encrypt + CrowdSec WAF
 
 api:
   dashboard: true
@@ -11,6 +11,7 @@ log:
 
 accessLog:
   bufferingSize: 100
+  filePath: /var/log/traefik/access.log
 
 entryPoints:
   web:
@@ -36,6 +37,9 @@ providers:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
     network: homelab
+    watch: true
+  file:
+    directory: /etc/traefik/dynamic
     watch: true
 
 metrics:
